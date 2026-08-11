@@ -1,0 +1,13 @@
+{
+    "name": "smod/backend",
+    "description": "API back-end de S'Mod Clothing",
+    "type": "project",
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Smod\\": "src/"
+        }
+    }
+}

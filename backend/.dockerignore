@@ -1,0 +1,5 @@
+.env
+.env.example
+vendor/
+public/uploads/produits/*
+!public/uploads/produits/.gitkeep

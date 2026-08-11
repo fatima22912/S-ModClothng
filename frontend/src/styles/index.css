@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rose: #E6197F;
+  --rose-dark: #A80F5C;
+  --rose-light: #FCE4F1;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: #2b2b2b;
+  background-color: #fff;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+.btn-rose {
+  @apply inline-flex items-center justify-center rounded-full bg-rose px-6 py-3 font-semibold text-white transition hover:bg-rose-dark hover:shadow-lg hover:shadow-rose/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100;
+}
+
+.btn-rose-outline {
+  @apply inline-flex items-center justify-center rounded-full border-2 border-rose px-6 py-3 font-semibold text-rose transition hover:bg-rose hover:text-white hover:shadow-lg hover:shadow-rose/20 active:scale-95;
+}
+
+.container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
