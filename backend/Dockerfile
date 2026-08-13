@@ -2,9 +2,6 @@ FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo_mysql \
     && a2enmod rewrite
-RUN docker-php-ext-install pdo_mysql \
-    && a2enmod rewrite \
-    && a2dismod mpm_event mpm_worker 2>/dev/null; a2enmod mpm_prefork
 
 COPY . /var/www/html
 
@@ -16,7 +13,13 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 
 EXPOSE 80
 
-# Railway (et la plupart des PaaS) fournissent le port d'écoute via $PORT au démarrage
-CMD sh -c "sed -i \"s/Listen 80/Listen \${PORT:-80}/\" /etc/apache2/ports.conf \
+# Railway (et la plupart des PaaS) fournissent le port d'écoute via $PORT au démarrage.
+# Le choix du MPM (a2dismod/a2enmod fait au build) ne "tient" pas toujours sur Railway,
+# donc on le refait au démarrage du conteneur avant de lancer Apache.
+CMD sh -c "a2dismod mpm_event mpm_worker 2>/dev/null; \
+    rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* ; \
+    a2enmod mpm_prefork \
+    && sed -i \"s/Listen 80/Listen \${PORT:-80}/\" /etc/apache2/ports.conf \
     && sed -i \"s/:80/:\${PORT:-80}/\" /etc/apache2/sites-enabled/000-default.conf \
+    && apache2ctl -t \
     && apache2-foreground"
