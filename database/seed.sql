@@ -6,8 +6,6 @@
 -- backend/scripts/creer_administrateur.php, puis de créer le compte
 -- propriétaire (Ngoné Seck) depuis l'espace admin. Voir le README.
 
-USE smod_clothing;
-
 -- ---------------------------------------------------------------------------
 -- Catégories (données de référence, pas de compte)
 -- ---------------------------------------------------------------------------

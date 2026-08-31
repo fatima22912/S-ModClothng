@@ -13,7 +13,9 @@ class Produit
     {
         $pdo = smod_db();
 
-        $sql = "SELECT p.*, c.nom AS categorie_nom
+        $sql = "SELECT p.*, c.nom AS categorie_nom,
+                       (SELECT COALESCE(SUM(v.quantite_stock), 0) FROM variantes v WHERE v.id_produit = p.id) AS stock_total,
+                       (SELECT COUNT(*) FROM variantes v WHERE v.id_produit = p.id) AS nb_variantes
                 FROM produits p
                 LEFT JOIN categories c ON c.id = p.id_categorie
                 WHERE p.actif = 1";
@@ -57,7 +59,8 @@ class Produit
         $pdo = smod_db();
 
         $stmtVariantes = $pdo->prepare(
-            "SELECT id, taille, quantite_stock FROM variantes WHERE id_produit = :id ORDER BY FIELD(taille,'XS','S','M','L','XL','XXL'), taille"
+            "SELECT id, taille, quantite_stock FROM variantes WHERE id_produit = :id
+             ORDER BY ARRAY_POSITION(ARRAY['XS','S','M','L','XL','XXL'], taille), taille"
         );
         $stmtVariantes->execute(['id' => $produit['id']]);
         $produit['variantes'] = $stmtVariantes->fetchAll();

@@ -1,12 +1,12 @@
 # S'Mod Clothing — Plateforme e-commerce
 
-Boutique en ligne de vêtements pour femmes (propriétaire : **Ngoné Seck**). Front-end React, back-end API PHP, base de données MySQL. Paiement par **Wave** (lien marchand) et **Orange Money** (QR code marchand), avec confirmation manuelle du paiement par la propriétaire.
+Boutique en ligne de vêtements pour femmes (propriétaire : **Ngoné Seck**). Front-end React, back-end API PHP, base de données PostgreSQL. Paiement par **Wave** (lien marchand) et **Orange Money** (QR code marchand), avec confirmation manuelle du paiement par la propriétaire.
 
 ## Sommaire
 
 - [Stack](#stack)
 - [Structure du projet](#structure-du-projet)
-- [Installer PHP et MySQL en local (Windows)](#installer-php-et-mysql-en-local-windows)
+- [Installer PHP et PostgreSQL en local (Windows)](#installer-php-et-postgresql-en-local-windows)
 - [Installation du projet](#installation-du-projet)
 - [Créer le premier compte administrateur](#créer-le-premier-compte-administrateur)
 - [Fonctionnement des paiements](#fonctionnement-des-paiements)
@@ -17,7 +17,7 @@ Boutique en ligne de vêtements pour femmes (propriétaire : **Ngoné Seck**). F
 
 - **Front-end** : React 18 + Vite, React Router, Tailwind CSS.
 - **Back-end** : PHP 8+ natif (pas de framework), routeur maison, API REST en JSON.
-- **Base de données** : MySQL / MariaDB, accès via PDO (requêtes préparées uniquement).
+- **Base de données** : PostgreSQL, accès via PDO (requêtes préparées uniquement).
 - **Authentification** : JWT (implémentation HS256 maison, sans dépendance externe) pour propriétaire et administrateur. Aucun compte requis côté visiteur.
 
 ## Structure du projet
@@ -41,42 +41,31 @@ smod-clothing/
 └── README.md
 ```
 
-## Installer PHP et MySQL en local (Windows)
+## Installer PHP et PostgreSQL en local (Windows)
 
-Le plus simple sur Windows est d'installer **XAMPP**, qui installe en une seule fois PHP, MySQL/MariaDB, Apache et phpMyAdmin (interface graphique pour la base de données) :
-
-1. Téléchargez XAMPP (version PHP 8.x) sur `apachefriends.org` et lancez l'installeur.
-2. Installez-le avec les options par défaut (généralement dans `C:\xampp`).
-3. Ouvrez le **XAMPP Control Panel** et démarrez les services **Apache** et **MySQL** (bouton "Start" sur chaque ligne).
-4. PHP est alors disponible dans `C:\xampp\php`. Ajoutez ce dossier à votre variable d'environnement `PATH` pour pouvoir taper `php` directement dans un terminal :
+1. **PHP** : le plus simple est d'installer **XAMPP** (`apachefriends.org`, version PHP 8.x) pour avoir PHP et Apache en une fois. Ajoutez ensuite `C:\xampp\php` à votre `PATH` :
    - Recherchez "Variables d'environnement" dans le menu Démarrer → "Modifier les variables d'environnement système" → bouton "Variables d'environnement" → sélectionnez `Path` dans la liste du bas → "Modifier" → "Nouveau" → collez `C:\xampp\php` → validez, puis **redémarrez votre terminal**.
-5. Vérifiez que tout fonctionne :
-   ```powershell
-   php -v
-   mysql --version
-   ```
-6. Gérez votre base de données visuellement via phpMyAdmin : `http://localhost/phpmyadmin` (une fois Apache et MySQL démarrés).
-
-> Alternative plus technique : installer PHP seul (`windows.php.net/download`, choisir la version "Thread Safe", l'ajouter au `PATH`) et MySQL/MariaDB séparément. XAMPP reste recommandé si vous n'avez pas l'habitude de configurer ces outils.
+   - Vérifiez : `php -v`
+2. **PostgreSQL** : téléchargez l'installeur officiel sur `postgresql.org/download/windows` (inclut pgAdmin, une interface graphique pour la base de données). Notez le mot de passe que vous définissez pour l'utilisateur `postgres` pendant l'installation.
+   - Vérifiez : `psql --version` (le dossier `bin` de PostgreSQL doit être dans le `PATH`, ajouté automatiquement par l'installeur en général).
 
 ## Installation du projet
 
 ### Prérequis
 
-- PHP 8.0+ avec l'extension `pdo_mysql` (inclus dans XAMPP)
-- MySQL ou MariaDB (inclus dans XAMPP)
+- PHP 8.0+ avec l'extension `pdo_pgsql`
+- PostgreSQL 13+
 - Node.js 18+ et npm
 
 ### 1. Base de données
 
-Avec le terminal MySQL fourni par XAMPP (`C:\xampp\mysql\bin\mysql.exe`, ou `mysql` si ajouté au `PATH`) :
-
 ```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/seed.sql
+psql -U postgres -c "CREATE DATABASE smod_clothing;"
+psql -U postgres -d smod_clothing -f database/schema.sql
+psql -U postgres -d smod_clothing -f database/seed.sql
 ```
 
-(Par défaut, l'utilisateur `root` de XAMPP n'a pas de mot de passe : appuyez sur Entrée quand `mysql` le demande.) Vous pouvez aussi importer ces deux fichiers via l'interface phpMyAdmin (`http://localhost/phpmyadmin` → onglet "Importer").
+Vous pouvez aussi faire ces imports visuellement via pgAdmin (clic droit sur la base → "Query Tool" → coller le contenu des fichiers).
 
 `seed.sql` ne crée que les 3 catégories de départ — **aucun compte n'est pré-créé**, voir la section suivante.
 
@@ -85,7 +74,7 @@ mysql -u root -p < database/seed.sql
 ```bash
 cd backend
 cp .env.example .env
-# Éditez .env : identifiants MySQL, JWT_SECRET (générez une valeur aléatoire longue), FRONTEND_URL
+# Éditez .env : identifiants PostgreSQL, JWT_SECRET (générez une valeur aléatoire longue), FRONTEND_URL
 
 php -S localhost:8000 -t public
 ```

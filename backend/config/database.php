@@ -3,7 +3,7 @@
 require_once __DIR__ . '/env.php';
 
 /**
- * Retourne une connexion PDO unique (singleton) vers MySQL/MariaDB.
+ * Retourne une connexion PDO unique (singleton) vers PostgreSQL.
  */
 function smod_db(): PDO
 {
@@ -14,12 +14,12 @@ function smod_db(): PDO
     }
 
     $host = env('DB_HOST', '127.0.0.1');
-    $port = env('DB_PORT', '3306');
+    $port = env('DB_PORT', '5432');
     $name = env('DB_NAME', 'smod_clothing');
-    $user = env('DB_USER', 'root');
+    $user = env('DB_USER', 'postgres');
     $pass = env('DB_PASSWORD', '');
 
-    $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+    $dsn = "pgsql:host={$host};port={$port};dbname={$name}";
 
     $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
