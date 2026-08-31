@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../services/api.js';
 import { usePanier } from '../../context/PanierContext.jsx';
-import ImageAvecSecours from '../../components/ImageAvecSecours.jsx';
+import PhotoProduit from '../../components/PhotoProduit.jsx';
 import { buildImageUrl, formaterPrix } from '../../config.js';
 
 export default function FicheProduit() {
@@ -37,6 +37,7 @@ export default function FicheProduit() {
   const aDesVariantes = produit.variantes && produit.variantes.length > 0;
   const enRupture = aDesVariantes && tailleChoisie && tailleChoisie.quantite_stock < 1;
   const stockInsuffisant = aDesVariantes && tailleChoisie && quantite > tailleChoisie.quantite_stock;
+  const produitEnStock = !aDesVariantes || produit.variantes.some((v) => v.quantite_stock > 0);
 
   function validerSelection() {
     if (aDesVariantes && !tailleChoisie) {
@@ -66,9 +67,10 @@ export default function FicheProduit() {
     <div className="container-page py-10">
       <div className="grid gap-10 md:grid-cols-2">
         <div className="aspect-[3/4] overflow-hidden rounded-2xl bg-rose-light">
-          <ImageAvecSecours
+          <PhotoProduit
             src={buildImageUrl(produit.image_principale)}
             alt={produit.nom}
+            enStock={produitEnStock}
             className="h-full w-full object-cover"
           />
         </div>

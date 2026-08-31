@@ -34,8 +34,7 @@ export default function Accueil() {
             Découvrez notre collection exclusive {BOUTIQUE.nom}
           </h1>
           <p className="max-w-2xl animate-fade-in-up text-lg text-gray-700 [animation-delay:150ms]">
-            Des tenues élégantes et tendance pour femmes, livrées chez vous ou à récupérer à Guédiawaye.
-            Paiement simple via Wave ou Orange Money.
+            Des tenues élégantes pour femme.
           </p>
           <div className="flex animate-fade-in-up flex-col gap-4 [animation-delay:300ms] sm:flex-row">
             <Link to="/catalogue" className="btn-rose">

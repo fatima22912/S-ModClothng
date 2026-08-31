@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
-import ImageAvecSecours from './ImageAvecSecours.jsx';
+import PhotoProduit from './PhotoProduit.jsx';
 import { buildImageUrl, formaterPrix } from '../config.js';
 
 export default function CarteProduit({ produit, delai = 0 }) {
+  const enStock =
+    produit.stock_total === undefined || Number(produit.nb_variantes) === 0 || Number(produit.stock_total) > 0;
+
   return (
     <Link
       to={`/produits/${produit.id}`}
@@ -10,9 +13,10 @@ export default function CarteProduit({ produit, delai = 0 }) {
       className="group block animate-fade-in-up overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-rose/10"
     >
       <div className="relative aspect-[3/4] w-full overflow-hidden">
-        <ImageAvecSecours
+        <PhotoProduit
           src={buildImageUrl(produit.image_principale)}
           alt={produit.nom}
+          enStock={enStock}
           className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-110"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
