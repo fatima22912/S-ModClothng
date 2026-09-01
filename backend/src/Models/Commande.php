@@ -41,11 +41,12 @@ class Commande
                     $variante = $stmtVariante->fetch();
 
                     if (!$variante) {
-                        throw new RuntimeException("La taille sélectionnée n'existe plus pour « {$produit['nom']} ».");
+                        throw new RuntimeException("L'option sélectionnée n'existe plus pour « {$produit['nom']} ».");
                     }
 
                     if ($variante['quantite_stock'] < $item['quantite']) {
-                        throw new RuntimeException("Stock insuffisant pour « {$produit['nom']} » (taille {$variante['taille']}).");
+                        $libelleVariante = $variante['taille'] . ($variante['couleur'] ? ' / ' . $variante['couleur'] : '');
+                        throw new RuntimeException("Stock insuffisant pour « {$produit['nom']} » ({$libelleVariante}).");
                     }
                 }
 
@@ -119,7 +120,7 @@ class Commande
         }
 
         $stmtLignes = $pdo->prepare(
-            "SELECT lc.*, p.nom AS nom_produit, v.taille
+            "SELECT lc.*, p.nom AS nom_produit, v.taille, v.couleur
              FROM lignes_commande lc
              JOIN produits p ON p.id = lc.id_produit
              LEFT JOIN variantes v ON v.id = lc.id_variante
@@ -159,7 +160,7 @@ class Commande
     {
         $pdo = smod_db();
         $stmt = $pdo->prepare(
-            "SELECT lc.*, p.nom AS nom_produit, v.taille
+            "SELECT lc.*, p.nom AS nom_produit, v.taille, v.couleur
              FROM lignes_commande lc
              JOIN produits p ON p.id = lc.id_produit
              LEFT JOIN variantes v ON v.id = lc.id_variante

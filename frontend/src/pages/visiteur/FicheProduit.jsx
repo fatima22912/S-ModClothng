@@ -41,11 +41,11 @@ export default function FicheProduit() {
 
   function validerSelection() {
     if (aDesVariantes && !tailleChoisie) {
-      setMessage('Veuillez choisir une taille.');
+      setMessage('Veuillez choisir une option.');
       return false;
     }
     if (enRupture || stockInsuffisant) {
-      setMessage('Stock insuffisant pour cette taille.');
+      setMessage('Stock insuffisant pour cette option.');
       return false;
     }
     return true;
@@ -84,7 +84,9 @@ export default function FicheProduit() {
 
           {aDesVariantes && (
             <div className="mt-6">
-              <p className="mb-2 font-medium text-gray-800">Taille</p>
+              <p className="mb-2 font-medium text-gray-800">
+                {produit.variantes.some((v) => v.couleur) ? 'Taille et couleur' : 'Taille'}
+              </p>
               <div className="flex flex-wrap gap-2">
                 {produit.variantes.map((variante) => (
                   <button
@@ -101,11 +103,11 @@ export default function FicheProduit() {
                         : 'border-gray-300 text-gray-700 hover:border-rose'
                     } ${variante.quantite_stock < 1 ? 'cursor-not-allowed opacity-40 line-through' : ''}`}
                   >
-                    {variante.taille}
+                    {variante.couleur ? `${variante.taille} – ${variante.couleur}` : variante.taille}
                   </button>
                 ))}
               </div>
-              {enRupture && <p className="mt-2 text-sm text-red-600">Cette taille est en rupture de stock.</p>}
+              {enRupture && <p className="mt-2 text-sm text-red-600">Cette option est en rupture de stock.</p>}
             </div>
           )}
 

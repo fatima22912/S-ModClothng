@@ -177,7 +177,7 @@ export default function Commande() {
             {articles.map((a) => (
               <li key={a.cle} className="flex justify-between text-gray-600">
                 <span>
-                  {a.nom} {a.taille && `(${a.taille})`} × {a.quantite}
+                  {a.nom} {(a.taille || a.couleur) && `(${[a.taille, a.couleur].filter(Boolean).join(' / ')})`} × {a.quantite}
                 </span>
                 <span>{formaterPrix(a.prix * a.quantite)}</span>
               </li>

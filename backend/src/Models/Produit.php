@@ -59,8 +59,8 @@ class Produit
         $pdo = smod_db();
 
         $stmtVariantes = $pdo->prepare(
-            "SELECT id, taille, quantite_stock FROM variantes WHERE id_produit = :id
-             ORDER BY ARRAY_POSITION(ARRAY['XS','S','M','L','XL','XXL'], taille), taille"
+            "SELECT id, taille, couleur, quantite_stock FROM variantes WHERE id_produit = :id
+             ORDER BY ARRAY_POSITION(ARRAY['XS','S','M','L','XL','XXL'], taille), taille, couleur"
         );
         $stmtVariantes->execute(['id' => $produit['id']]);
         $produit['variantes'] = $stmtVariantes->fetchAll();
@@ -156,12 +156,13 @@ class Produit
         $pdo->prepare("DELETE FROM variantes WHERE id_produit = :id")->execute(['id' => $idProduit]);
 
         $stmt = $pdo->prepare(
-            "INSERT INTO variantes (id_produit, taille, quantite_stock) VALUES (:id_produit, :taille, :quantite_stock)"
+            "INSERT INTO variantes (id_produit, taille, couleur, quantite_stock) VALUES (:id_produit, :taille, :couleur, :quantite_stock)"
         );
         foreach ($variantes as $variante) {
             $stmt->execute([
                 'id_produit' => $idProduit,
                 'taille' => $variante['taille'],
+                'couleur' => $variante['couleur'] ?: null,
                 'quantite_stock' => $variante['quantite_stock'] ?? 0,
             ]);
         }

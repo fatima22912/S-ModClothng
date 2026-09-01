@@ -37,7 +37,12 @@ export default function Panier() {
               <div className="flex flex-1 flex-col justify-between">
                 <div>
                   <p className="font-medium text-gray-900">{article.nom}</p>
-                  {article.taille && <p className="text-sm text-gray-500">Taille : {article.taille}</p>}
+                  {article.taille && (
+                    <p className="text-sm text-gray-500">
+                      Taille : {article.taille}
+                      {article.couleur && ` · Couleur : ${article.couleur}`}
+                    </p>
+                  )}
                   <p className="text-sm font-semibold text-rose-dark">{formaterPrix(article.prix)}</p>
                 </div>
 

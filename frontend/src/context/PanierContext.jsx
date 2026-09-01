@@ -40,6 +40,7 @@ export function PanierProvider({ children }) {
           image_principale: produit.image_principale,
           id_variante: variante?.id ?? null,
           taille: variante?.taille ?? null,
+          couleur: variante?.couleur ?? null,
           quantite,
         },
       ];

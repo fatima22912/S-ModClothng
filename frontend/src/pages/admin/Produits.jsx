@@ -24,7 +24,7 @@ export default function AdminProduits() {
   const [formulaireOuvert, setFormulaireOuvert] = useState(false);
   const [produitEnEdition, setProduitEnEdition] = useState(null);
   const [champs, setChamps] = useState(PRODUIT_VIDE);
-  const [variantes, setVariantes] = useState([{ taille: 'M', quantite_stock: 0 }]);
+  const [variantes, setVariantes] = useState([{ taille: 'M', couleur: '', quantite_stock: 0 }]);
   const [fichierImage, setFichierImage] = useState(null);
   const [enregistrement, setEnregistrement] = useState(false);
   const [erreurFormulaire, setErreurFormulaire] = useState('');
@@ -48,7 +48,7 @@ export default function AdminProduits() {
   function ouvrirCreation() {
     setProduitEnEdition(null);
     setChamps({ ...PRODUIT_VIDE, id_proprietaire: proprietaires[0]?.id ?? '' });
-    setVariantes([{ taille: 'M', quantite_stock: 0 }]);
+    setVariantes([{ taille: 'M', couleur: '', quantite_stock: 0 }]);
     setFichierImage(null);
     setErreurFormulaire('');
     setFormulaireOuvert(true);
@@ -64,7 +64,11 @@ export default function AdminProduits() {
       id_proprietaire: produit.id_proprietaire,
       actif: !!produit.actif,
     });
-    setVariantes(produit.variantes?.length ? produit.variantes : [{ taille: 'M', quantite_stock: 0 }]);
+    setVariantes(
+      produit.variantes?.length
+        ? produit.variantes.map((v) => ({ ...v, couleur: v.couleur ?? '' }))
+        : [{ taille: 'M', couleur: '', quantite_stock: 0 }]
+    );
     setFichierImage(null);
     setErreurFormulaire('');
     setFormulaireOuvert(true);
@@ -75,7 +79,7 @@ export default function AdminProduits() {
   }
 
   function ajouterVariante() {
-    setVariantes((v) => [...v, { taille: '', quantite_stock: 0 }]);
+    setVariantes((v) => [...v, { taille: '', couleur: '', quantite_stock: 0 }]);
   }
 
   function retirerVariante(index) {
@@ -93,7 +97,9 @@ export default function AdminProduits() {
       id_categorie: champs.id_categorie || null,
       id_proprietaire: Number(champs.id_proprietaire),
       actif: champs.actif ? 1 : 0,
-      variantes: variantes.filter((v) => v.taille),
+      variantes: variantes
+        .filter((v) => v.taille)
+        .map((v) => ({ ...v, couleur: v.couleur?.trim() || null })),
     };
 
     try {
@@ -253,7 +259,7 @@ export default function AdminProduits() {
 
               <div>
                 <div className="mb-1 flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Tailles et stock</label>
+                  <label className="text-sm font-medium text-gray-700">Tailles, couleurs et stock</label>
                   <button type="button" onClick={ajouterVariante} className="text-sm font-medium text-rose">
                     + Ajouter
                   </button>
@@ -273,6 +279,13 @@ export default function AdminProduits() {
                           </option>
                         ))}
                       </select>
+                      <input
+                        type="text"
+                        placeholder="Couleur (optionnel)"
+                        value={variante.couleur}
+                        onChange={(e) => majVariante(index, 'couleur', e.target.value)}
+                        className="w-32 rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
+                      />
                       <input
                         type="number"
                         min="0"

@@ -105,7 +105,7 @@ export default function Dashboard() {
                     {commande.lignes.map((ligne) => (
                       <li key={ligne.id} className="flex justify-between">
                         <span>
-                          {ligne.nom_produit} {ligne.taille && `(${ligne.taille})`} × {ligne.quantite}
+                          {ligne.nom_produit} {(ligne.taille || ligne.couleur) && `(${[ligne.taille, ligne.couleur].filter(Boolean).join(' / ')})`} × {ligne.quantite}
                         </span>
                         <span>{formaterPrix(ligne.prix_unitaire * ligne.quantite)}</span>
                       </li>

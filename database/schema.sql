@@ -73,15 +73,16 @@ CREATE TABLE produit_images (
 CREATE INDEX idx_produit_images_produit ON produit_images (id_produit);
 
 -- ---------------------------------------------------------------------------
--- variantes (uniquement la taille — pas de choix de couleur côté client)
+-- variantes (taille + couleur optionnelle, stock suivi par combinaison)
 -- ---------------------------------------------------------------------------
 CREATE TABLE variantes (
     id                  SERIAL PRIMARY KEY,
     id_produit          INTEGER NOT NULL,
     taille              VARCHAR(20) NOT NULL,
+    couleur             VARCHAR(30) NULL,
     quantite_stock      INTEGER NOT NULL DEFAULT 0,
     CONSTRAINT fk_variantes_produit FOREIGN KEY (id_produit) REFERENCES produits(id) ON DELETE CASCADE,
-    CONSTRAINT uq_variante_produit_taille UNIQUE (id_produit, taille)
+    CONSTRAINT uq_variante_produit_taille UNIQUE (id_produit, taille, couleur)
 );
 CREATE INDEX idx_variantes_produit ON variantes (id_produit);
 
