@@ -70,7 +70,7 @@ export default function FicheProduit() {
       return false;
     }
     if (aDesVariantes && aDesCouleurs && !couleurChoisie) {
-      setMessage('Veuillez choisir une couleur.');
+      setMessage("Veuillez d'abord choisir une couleur.");
       return false;
     }
     if (aDesVariantes && !varianteChoisie) {

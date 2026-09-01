@@ -313,10 +313,11 @@ export default function AdminProduits() {
                         {groupe.lignes.map(({ index, couleur, quantite_stock }) => (
                           <div key={index} className="flex items-center gap-2">
                             <select
-                              value={couleur}
+                              value={couleur ?? ''}
                               onChange={(e) => majVariante(index, 'couleur', e.target.value)}
                               className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
                             >
+                              <option value="">Aucune couleur</option>
                               {COULEURS_SUGGEREES.map((c) => (
                                 <option key={c.nom} value={c.nom}>
                                   {c.nom}
