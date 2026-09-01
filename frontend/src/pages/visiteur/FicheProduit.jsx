@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../services/api.js';
 import { usePanier } from '../../context/PanierContext.jsx';
 import PhotoProduit from '../../components/PhotoProduit.jsx';
-import { buildImageUrl, formaterPrix } from '../../config.js';
+import { buildImageUrl, formaterPrix, COULEURS_SUGGEREES } from '../../config.js';
 
 export default function FicheProduit() {
   const { id } = useParams();
@@ -12,6 +12,7 @@ export default function FicheProduit() {
 
   const [produit, setProduit] = useState(null);
   const [tailleChoisie, setTailleChoisie] = useState(null);
+  const [couleurChoisie, setCouleurChoisie] = useState(null);
   const [quantite, setQuantite] = useState(1);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState('');
@@ -23,8 +24,12 @@ export default function FicheProduit() {
       .obtenirProduit(id)
       .then((donnees) => {
         setProduit(donnees);
-        const premiereTailleDisponible = donnees.variantes?.find((v) => v.quantite_stock > 0);
-        setTailleChoisie(premiereTailleDisponible ?? donnees.variantes?.[0] ?? null);
+        const tailles = [...new Set((donnees.variantes ?? []).map((v) => v.taille))];
+        const tailleDisponible = tailles.find((t) =>
+          donnees.variantes.some((v) => v.taille === t && v.quantite_stock > 0)
+        );
+        setTailleChoisie(tailleDisponible ?? tailles[0] ?? null);
+        setCouleurChoisie(null);
       })
       .catch(() => setErreur('Ce produit est introuvable.'))
       .finally(() => setChargement(false));
@@ -35,13 +40,41 @@ export default function FicheProduit() {
     return <p className="container-page py-16 text-center text-red-600">{erreur || 'Produit introuvable.'}</p>;
 
   const aDesVariantes = produit.variantes && produit.variantes.length > 0;
-  const enRupture = aDesVariantes && tailleChoisie && tailleChoisie.quantite_stock < 1;
-  const stockInsuffisant = aDesVariantes && tailleChoisie && quantite > tailleChoisie.quantite_stock;
+  const tailles = aDesVariantes ? [...new Set(produit.variantes.map((v) => v.taille))] : [];
+  const variantesTaille = aDesVariantes ? produit.variantes.filter((v) => v.taille === tailleChoisie) : [];
+  const aDesCouleurs = variantesTaille.some((v) => v.couleur);
+  const varianteChoisie = aDesCouleurs
+    ? variantesTaille.find((v) => v.couleur === couleurChoisie) ?? null
+    : variantesTaille[0] ?? null;
+
+  const enRupture = aDesVariantes && varianteChoisie && varianteChoisie.quantite_stock < 1;
+  const stockInsuffisant = aDesVariantes && varianteChoisie && quantite > varianteChoisie.quantite_stock;
   const produitEnStock = !aDesVariantes || produit.variantes.some((v) => v.quantite_stock > 0);
+
+  function choisirTaille(taille) {
+    setTailleChoisie(taille);
+    setCouleurChoisie(null);
+    setQuantite(1);
+    setMessage('');
+  }
+
+  function choisirCouleur(couleur) {
+    setCouleurChoisie(couleur);
+    setQuantite(1);
+    setMessage('');
+  }
 
   function validerSelection() {
     if (aDesVariantes && !tailleChoisie) {
-      setMessage('Veuillez choisir une option.');
+      setMessage('Veuillez choisir une taille.');
+      return false;
+    }
+    if (aDesVariantes && aDesCouleurs && !couleurChoisie) {
+      setMessage('Veuillez choisir une couleur.');
+      return false;
+    }
+    if (aDesVariantes && !varianteChoisie) {
+      setMessage("Cette combinaison n'est pas disponible.");
       return false;
     }
     if (enRupture || stockInsuffisant) {
@@ -53,13 +86,13 @@ export default function FicheProduit() {
 
   function handleAjouterAuPanier() {
     if (!validerSelection()) return;
-    ajouterArticle(produit, tailleChoisie, quantite);
+    ajouterArticle(produit, varianteChoisie, quantite);
     setMessage('Article ajouté au panier !');
   }
 
   function handleAcheterMaintenant() {
     if (!validerSelection()) return;
-    ajouterArticle(produit, tailleChoisie, quantite);
+    ajouterArticle(produit, varianteChoisie, quantite);
     navigate('/commande');
   }
 
@@ -84,29 +117,54 @@ export default function FicheProduit() {
 
           {aDesVariantes && (
             <div className="mt-6">
-              <p className="mb-2 font-medium text-gray-800">
-                {produit.variantes.some((v) => v.couleur) ? 'Taille et couleur' : 'Taille'}
-              </p>
+              <p className="mb-2 font-medium text-gray-800">Taille</p>
               <div className="flex flex-wrap gap-2">
-                {produit.variantes.map((variante) => (
-                  <button
-                    key={variante.id}
-                    disabled={variante.quantite_stock < 1}
-                    onClick={() => {
-                      setTailleChoisie(variante);
-                      setQuantite(1);
-                      setMessage('');
-                    }}
-                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                      tailleChoisie?.id === variante.id
-                        ? 'border-rose bg-rose text-white'
-                        : 'border-gray-300 text-gray-700 hover:border-rose'
-                    } ${variante.quantite_stock < 1 ? 'cursor-not-allowed opacity-40 line-through' : ''}`}
-                  >
-                    {variante.couleur ? `${variante.taille} – ${variante.couleur}` : variante.taille}
-                  </button>
-                ))}
+                {tailles.map((taille) => {
+                  const dispoPourTaille = produit.variantes.some((v) => v.taille === taille && v.quantite_stock > 0);
+                  return (
+                    <button
+                      key={taille}
+                      disabled={!dispoPourTaille}
+                      onClick={() => choisirTaille(taille)}
+                      className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                        tailleChoisie === taille
+                          ? 'border-rose bg-rose text-white'
+                          : 'border-gray-300 text-gray-700 hover:border-rose'
+                      } ${!dispoPourTaille ? 'cursor-not-allowed opacity-40 line-through' : ''}`}
+                    >
+                      {taille}
+                    </button>
+                  );
+                })}
               </div>
+
+              {tailleChoisie && aDesCouleurs && (
+                <div className="mt-4">
+                  <p className="mb-2 font-medium text-gray-800">Couleur</p>
+                  <div className="flex flex-wrap gap-3">
+                    {variantesTaille.map((variante) => {
+                      const hex = COULEURS_SUGGEREES.find((c) => c.nom === variante.couleur)?.hex ?? '#D1D5DB';
+                      const selectionnee = couleurChoisie === variante.couleur;
+                      const indisponible = variante.quantite_stock < 1;
+                      return (
+                        <button
+                          key={variante.id}
+                          type="button"
+                          title={variante.couleur}
+                          aria-label={variante.couleur}
+                          disabled={indisponible}
+                          onClick={() => choisirCouleur(variante.couleur)}
+                          className={`h-9 w-9 rounded-full border-2 transition ${
+                            selectionnee ? 'border-rose ring-2 ring-rose ring-offset-2' : 'border-gray-300'
+                          } ${indisponible ? 'cursor-not-allowed opacity-30' : ''}`}
+                          style={{ backgroundColor: hex }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {enRupture && <p className="mt-2 text-sm text-red-600">Cette option est en rupture de stock.</p>}
             </div>
           )}

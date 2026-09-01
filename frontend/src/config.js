@@ -17,6 +17,21 @@ export const DEVELOPPEUR = {
   email: 'fatoumbaye1@esp.sn',
 };
 
+export const COULEURS_SUGGEREES = [
+  { nom: 'Blanc', hex: '#FFFFFF' },
+  { nom: 'Noir', hex: '#111111' },
+  { nom: 'Gris', hex: '#9CA3AF' },
+  { nom: 'Beige', hex: '#D9C7A7' },
+  { nom: 'Marron', hex: '#7C4A2D' },
+  { nom: 'Rouge', hex: '#DC2626' },
+  { nom: 'Rose', hex: '#EC4899' },
+  { nom: 'Orange', hex: '#EA580C' },
+  { nom: 'Jaune', hex: '#EAB308' },
+  { nom: 'Vert', hex: '#16A34A' },
+  { nom: 'Bleu', hex: '#2563EB' },
+  { nom: 'Violet', hex: '#7C3AED' },
+];
+
 export function buildImageUrl(cheminImage) {
   if (!cheminImage) return null;
   if (cheminImage.startsWith('http')) return cheminImage;

@@ -3,7 +3,7 @@ import LayoutEspacePro from '../../components/LayoutEspacePro.jsx';
 import ImageAvecSecours from '../../components/ImageAvecSecours.jsx';
 import { api, ApiError } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { buildImageUrl, formaterPrix } from '../../config.js';
+import { buildImageUrl, formaterPrix, COULEURS_SUGGEREES } from '../../config.js';
 
 const LIENS = [
   { to: '/proprietaire/dashboard', label: 'Commandes', fin: true },
@@ -24,7 +24,7 @@ export default function ProprietaireProduits() {
   const [formulaireOuvert, setFormulaireOuvert] = useState(false);
   const [produitEnEdition, setProduitEnEdition] = useState(null);
   const [champs, setChamps] = useState(PRODUIT_VIDE);
-  const [variantes, setVariantes] = useState([{ taille: 'M', couleur: '', quantite_stock: 0 }]);
+  const [variantes, setVariantes] = useState([{ taille: 'M', couleur: COULEURS_SUGGEREES[0].nom, quantite_stock: 0 }]);
   const [fichierImage, setFichierImage] = useState(null);
   const [enregistrement, setEnregistrement] = useState(false);
   const [erreurFormulaire, setErreurFormulaire] = useState('');
@@ -47,7 +47,7 @@ export default function ProprietaireProduits() {
   function ouvrirCreation() {
     setProduitEnEdition(null);
     setChamps(PRODUIT_VIDE);
-    setVariantes([{ taille: 'M', couleur: '', quantite_stock: 0 }]);
+    setVariantes([{ taille: 'M', couleur: COULEURS_SUGGEREES[0].nom, quantite_stock: 0 }]);
     setFichierImage(null);
     setErreurFormulaire('');
     setFormulaireOuvert(true);
@@ -64,8 +64,8 @@ export default function ProprietaireProduits() {
     });
     setVariantes(
       produit.variantes?.length
-        ? produit.variantes.map((v) => ({ ...v, couleur: v.couleur ?? '' }))
-        : [{ taille: 'M', couleur: '', quantite_stock: 0 }]
+        ? produit.variantes.map((v) => ({ ...v, couleur: v.couleur ?? COULEURS_SUGGEREES[0].nom }))
+        : [{ taille: 'M', couleur: COULEURS_SUGGEREES[0].nom, quantite_stock: 0 }]
     );
     setFichierImage(null);
     setErreurFormulaire('');
@@ -76,8 +76,22 @@ export default function ProprietaireProduits() {
     setVariantes((v) => v.map((item, i) => (i === index ? { ...item, [champ]: valeur } : item)));
   }
 
-  function ajouterVariante() {
-    setVariantes((v) => [...v, { taille: '', couleur: '', quantite_stock: 0 }]);
+  function majTailleGroupe(tailleActuelle, nouvelleTaille) {
+    setVariantes((v) => v.map((item) => (item.taille === tailleActuelle ? { ...item, taille: nouvelleTaille } : item)));
+  }
+
+  function ajouterTaille() {
+    const tailleLibre = TAILLES_SUGGEREES.find((t) => !variantes.some((v) => v.taille === t)) ?? '';
+    setVariantes((v) => [...v, { taille: tailleLibre, couleur: COULEURS_SUGGEREES[0].nom, quantite_stock: 0 }]);
+  }
+
+  function ajouterCouleur(taille) {
+    setVariantes((v) => {
+      const couleursUtilisees = v.filter((item) => item.taille === taille).map((item) => item.couleur);
+      const couleurLibre =
+        COULEURS_SUGGEREES.find((c) => !couleursUtilisees.includes(c.nom))?.nom ?? COULEURS_SUGGEREES[0].nom;
+      return [...v, { taille, couleur: couleurLibre, quantite_stock: 0 }];
+    });
   }
 
   function retirerVariante(index) {
@@ -244,43 +258,69 @@ export default function ProprietaireProduits() {
               <div>
                 <div className="mb-1 flex items-center justify-between">
                   <label className="text-sm font-medium text-gray-700">Tailles, couleurs et stock</label>
-                  <button type="button" onClick={ajouterVariante} className="text-sm font-medium text-rose">
-                    + Ajouter
+                  <button type="button" onClick={ajouterTaille} className="text-sm font-medium text-rose">
+                    + Nouvelle taille
                   </button>
                 </div>
-                <div className="space-y-2">
-                  {variantes.map((variante, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <select
-                        value={variante.taille}
-                        onChange={(e) => majVariante(index, 'taille', e.target.value)}
-                        className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
-                      >
-                        <option value="">Taille</option>
-                        {TAILLES_SUGGEREES.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
+                <div className="space-y-3">
+                  {Object.values(
+                    variantes.reduce((groupes, variante, index) => {
+                      const cle = variante.taille || `_sans_taille_${index}`;
+                      if (!groupes[cle]) groupes[cle] = { taille: variante.taille, lignes: [] };
+                      groupes[cle].lignes.push({ ...variante, index });
+                      return groupes;
+                    }, {})
+                  ).map((groupe) => (
+                    <div key={groupe.taille || groupe.lignes[0].index} className="rounded-lg border border-gray-200 p-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <select
+                          value={groupe.taille}
+                          onChange={(e) => majTailleGroupe(groupe.taille, e.target.value)}
+                          className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm font-medium"
+                        >
+                          <option value="">Taille</option>
+                          {TAILLES_SUGGEREES.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => ajouterCouleur(groupe.taille)}
+                          className="text-sm font-medium text-rose"
+                        >
+                          + Couleur
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {groupe.lignes.map(({ index, couleur, quantite_stock }) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <select
+                              value={couleur}
+                              onChange={(e) => majVariante(index, 'couleur', e.target.value)}
+                              className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
+                            >
+                              {COULEURS_SUGGEREES.map((c) => (
+                                <option key={c.nom} value={c.nom}>
+                                  {c.nom}
+                                </option>
+                              ))}
+                            </select>
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="Stock"
+                              value={quantite_stock}
+                              onChange={(e) => majVariante(index, 'quantite_stock', Number(e.target.value))}
+                              className="w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
+                            />
+                            <button type="button" onClick={() => retirerVariante(index)} className="text-sm text-red-600">
+                              Retirer
+                            </button>
+                          </div>
                         ))}
-                      </select>
-                      <input
-                        type="text"
-                        placeholder="Couleur (optionnel)"
-                        value={variante.couleur}
-                        onChange={(e) => majVariante(index, 'couleur', e.target.value)}
-                        className="w-32 rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="Stock"
-                        value={variante.quantite_stock}
-                        onChange={(e) => majVariante(index, 'quantite_stock', Number(e.target.value))}
-                        className="w-24 rounded-lg border border-gray-300 px-2 py-1.5 text-sm"
-                      />
-                      <button type="button" onClick={() => retirerVariante(index)} className="text-sm text-red-600">
-                        Retirer
-                      </button>
+                      </div>
                     </div>
                   ))}
                 </div>
