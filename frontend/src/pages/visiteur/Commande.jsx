@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { usePanier } from '../../context/PanierContext.jsx';
 import { api, ApiError } from '../../services/api.js';
-import { BOUTIQUE, formaterPrix } from '../../config.js';
+import { formaterPrix } from '../../config.js';
 import logoOrangeMoney from '../../assets/orange-money-logo.jpg';
 import logoWave from '../../assets/wave-logo.jpg';
 
 const CHAMPS_INITIAUX = {
   nom_client: '',
   telephone_client: '',
-  mode_livraison: 'livraison',
   adresse_livraison: '',
   ville: '',
   mode_paiement: 'wave',
@@ -106,66 +105,28 @@ export default function Commande() {
             />
           </div>
 
-          <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">Comment souhaitez-vous récupérer votre commande ?</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label
-                className={`cursor-pointer rounded-lg border p-3 text-sm ${
-                  champs.mode_livraison === 'livraison' ? 'border-rose bg-rose-light' : 'border-gray-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="mode_livraison"
-                  value="livraison"
-                  checked={champs.mode_livraison === 'livraison'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Livraison à mon adresse
-              </label>
-              <label
-                className={`cursor-pointer rounded-lg border p-3 text-sm ${
-                  champs.mode_livraison === 'retrait_boutique' ? 'border-rose bg-rose-light' : 'border-gray-300'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="mode_livraison"
-                  value="retrait_boutique"
-                  checked={champs.mode_livraison === 'retrait_boutique'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Retrait à {BOUTIQUE.adresseRetrait}
-              </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Adresse de livraison</label>
+              <input
+                required
+                name="adresse_livraison"
+                value={champs.adresse_livraison}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-rose focus:outline-none focus:ring-1 focus:ring-rose"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Ville</label>
+              <input
+                required
+                name="ville"
+                value={champs.ville}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-rose focus:outline-none focus:ring-1 focus:ring-rose"
+              />
             </div>
           </div>
-
-          {champs.mode_livraison === 'livraison' && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Adresse de livraison</label>
-                <input
-                  required
-                  name="adresse_livraison"
-                  value={champs.adresse_livraison}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-rose focus:outline-none focus:ring-1 focus:ring-rose"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Ville</label>
-                <input
-                  required
-                  name="ville"
-                  value={champs.ville}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-rose focus:outline-none focus:ring-1 focus:ring-rose"
-                />
-              </div>
-            </div>
-          )}
 
           <div>
             <p className="mb-2 text-sm font-medium text-gray-700">Mode de paiement</p>

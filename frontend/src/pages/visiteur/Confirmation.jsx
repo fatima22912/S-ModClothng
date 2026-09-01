@@ -89,13 +89,9 @@ export default function Confirmation() {
               </li>
             ))}
           </ul>
-          {commande.mode_livraison === 'retrait_boutique' ? (
-            <p className="mt-3">Retrait : {BOUTIQUE.adresseRetrait}</p>
-          ) : (
-            <p className="mt-3">
-              Livraison : {commande.adresse_livraison}, {commande.ville}
-            </p>
-          )}
+          <p className="mt-3">
+            Livraison : {commande.adresse_livraison}, {commande.ville}
+          </p>
         </div>
       </div>
     </div>

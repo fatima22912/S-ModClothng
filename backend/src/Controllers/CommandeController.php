@@ -16,19 +16,10 @@ class CommandeController
             ->requis('nom_client')->longueurMax('nom_client', 150)
             ->requis('telephone_client')->longueurMax('telephone_client', 30)->telephone('telephone_client')
             ->requis('mode_paiement')->dansListe('mode_paiement', ['wave', 'orange_money'])
-            ->dansListe('mode_livraison', ['livraison', 'retrait_boutique']);
+            ->requis('adresse_livraison')->requis('ville');
 
         if (!$validator->estValide()) {
             Response::erreur($validator->premiereErreur(), 400);
-        }
-
-        $modeLivraison = $donnees['mode_livraison'] ?? 'livraison';
-        if ($modeLivraison === 'livraison') {
-            $sousValidator = new Validator($donnees);
-            $sousValidator->requis('adresse_livraison')->requis('ville');
-            if (!$sousValidator->estValide()) {
-                Response::erreur($sousValidator->premiereErreur(), 400);
-            }
         }
 
         $panier = $donnees['panier'] ?? null;
@@ -46,9 +37,9 @@ class CommandeController
             $commande = Commande::creerAvecLignes([
                 'nom_client' => trim($donnees['nom_client']),
                 'telephone_client' => trim($donnees['telephone_client']),
-                'mode_livraison' => $modeLivraison,
-                'adresse_livraison' => $donnees['adresse_livraison'] ?? null,
-                'ville' => $donnees['ville'] ?? null,
+                'mode_livraison' => 'livraison',
+                'adresse_livraison' => $donnees['adresse_livraison'],
+                'ville' => $donnees['ville'],
                 'mode_paiement' => $donnees['mode_paiement'],
                 'reference_transaction' => $donnees['reference_transaction'] ?? null,
             ], $panier);

@@ -93,9 +93,9 @@ CREATE TABLE commandes (
     nom_client              VARCHAR(150) NOT NULL,
     telephone_client        VARCHAR(30) NOT NULL,
     mode_livraison          VARCHAR(20) NOT NULL DEFAULT 'livraison'
-                                CHECK (mode_livraison IN ('livraison', 'retrait_boutique')),
-    adresse_livraison       VARCHAR(255) NULL,
-    ville                   VARCHAR(100) NULL,
+                                CHECK (mode_livraison = 'livraison'),
+    adresse_livraison       VARCHAR(255) NOT NULL,
+    ville                   VARCHAR(100) NOT NULL,
     montant_total           DECIMAL(10,2) NOT NULL,
     mode_paiement           VARCHAR(20) NOT NULL
                                 CHECK (mode_paiement IN ('wave', 'orange_money')),

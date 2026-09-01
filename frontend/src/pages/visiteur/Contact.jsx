@@ -19,7 +19,7 @@ export default function Contact() {
         Discuter sur WhatsApp
       </a>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+      <div className="mt-6 grid gap-6">
         <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="mb-2 font-semibold text-rose-dark">Téléphone</h2>
           {BOUTIQUE.telephones.map((tel) => (
@@ -29,11 +29,6 @@ export default function Contact() {
               </a>
             </p>
           ))}
-        </div>
-
-        <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="mb-2 font-semibold text-rose-dark">Retrait de commande</h2>
-          <p className="text-gray-700">{BOUTIQUE.adresseRetrait}</p>
         </div>
       </div>
     </div>

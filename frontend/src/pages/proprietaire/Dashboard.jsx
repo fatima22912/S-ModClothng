@@ -113,9 +113,7 @@ export default function Dashboard() {
                   </ul>
 
                   <p className="mb-4 text-sm text-gray-600">
-                    {commande.mode_livraison === 'retrait_boutique'
-                      ? 'Retrait en boutique'
-                      : `Livraison : ${commande.adresse_livraison}, ${commande.ville}`}
+                    Livraison : {commande.adresse_livraison}, {commande.ville}
                     {' · '}Paiement : {commande.mode_paiement === 'wave' ? 'Wave' : 'Orange Money'}
                   </p>
 

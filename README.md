@@ -121,7 +121,7 @@ Le parcours est donc :
 2. La page de confirmation affiche le lien Wave à cliquer, ou le QR code Orange Money à scanner (`POST /api/paiement/wave/initier` ou `/api/paiement/orange-money/initier`), ainsi qu'un bouton pour envoyer la preuve de paiement par WhatsApp.
 3. La propriétaire vérifie la réception du paiement sur son compte Wave/Orange Money, puis valide la commande depuis son tableau de bord (`PATCH /api/proprietaire/commandes/{id}/statut`, boutons « Marquer le paiement comme reçu » / changement de statut).
 
-Les numéros de téléphone de contact (787346777, 786525821) et le point de retrait (Guédiawaye, Cité Gadaye) sont centralisés dans [`frontend/src/config.js`](frontend/src/config.js).
+Les numéros de téléphone de contact (787346777, 786525821) sont centralisés dans [`frontend/src/config.js`](frontend/src/config.js).
 
 ## Assets à remplacer (logo et QR code)
 

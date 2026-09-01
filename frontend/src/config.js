@@ -8,7 +8,6 @@ export const BOUTIQUE = {
   proprietaire: 'Ngoné Seck',
   telephones: ['787346777', '786525821'],
   whatsapp: '221787346777',
-  adresseRetrait: 'Guédiawaye, Cité Gadaye, Dakar',
   wavePaymentLink: 'https://pay.wave.com/m/M_sn_nSnCGLfVeL3K/c/sn/',
 };
 

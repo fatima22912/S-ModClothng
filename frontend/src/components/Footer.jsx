@@ -43,9 +43,9 @@ export default function Footer() {
         <div>
           <h4 className="mb-3 flex items-center gap-2 font-semibold">
             <IconeLieu />
-            Retrait boutique
+            Livraison
           </h4>
-          <p className="text-sm text-white/80">{BOUTIQUE.adresseRetrait}</p>
+          <p className="text-sm text-white/80">Livraison partout dans le monde</p>
         </div>
       </div>
 
