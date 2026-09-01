@@ -11,7 +11,7 @@ const LIENS = [
   { to: '/proprietaire/statistiques', label: 'Statistiques' },
 ];
 
-const PRODUIT_VIDE = { nom: '', description: '', prix: '', id_categorie: '', actif: true };
+const PRODUIT_VIDE = { nom: '', description: '', prix: '', prix_promo: '', id_categorie: '', actif: true };
 const TAILLES_SUGGEREES = ['XS', 'S', 'M', 'L', 'XL'];
 
 export default function ProprietaireProduits() {
@@ -59,6 +59,7 @@ export default function ProprietaireProduits() {
       nom: produit.nom,
       description: produit.description ?? '',
       prix: produit.prix,
+      prix_promo: produit.prix_promo ?? '',
       id_categorie: produit.id_categorie ?? '',
       actif: !!produit.actif,
     });
@@ -106,6 +107,7 @@ export default function ProprietaireProduits() {
     const donnees = {
       ...champs,
       prix: Number(champs.prix),
+      prix_promo: champs.prix_promo === '' ? null : Number(champs.prix_promo),
       id_categorie: champs.id_categorie || null,
       actif: champs.actif ? 1 : 0,
       variantes: variantes
@@ -174,7 +176,14 @@ export default function ProprietaireProduits() {
             <div className="p-4">
               <p className="font-medium text-gray-900">{produit.nom}</p>
               <p className="text-sm text-gray-500">{produit.categorie_nom ?? 'Sans catégorie'}</p>
-              <p className="font-semibold text-rose-dark">{formaterPrix(produit.prix)}</p>
+              {produit.prix_promo ? (
+                <p className="flex items-center gap-2">
+                  <span className="text-sm text-gray-400 line-through">{formaterPrix(produit.prix)}</span>
+                  <span className="font-semibold text-rose-dark">{formaterPrix(produit.prix_promo)}</span>
+                </p>
+              ) : (
+                <p className="font-semibold text-rose-dark">{formaterPrix(produit.prix)}</p>
+              )}
               {!produit.actif && <p className="text-xs font-medium text-red-600">Inactif</p>}
 
               <div className="mt-3 flex gap-2">
@@ -234,20 +243,32 @@ export default function ProprietaireProduits() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Catégorie</label>
-                  <select
-                    value={champs.id_categorie}
-                    onChange={(e) => setChamps((c) => ({ ...c, id_categorie: e.target.value }))}
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Prix promo (optionnel)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Vente flash"
+                    value={champs.prix_promo}
+                    onChange={(e) => setChamps((c) => ({ ...c, prix_promo: e.target.value }))}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2"
-                  >
-                    <option value="">Aucune</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.nom}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Catégorie</label>
+                <select
+                  value={champs.id_categorie}
+                  onChange={(e) => setChamps((c) => ({ ...c, id_categorie: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                >
+                  <option value="">Aucune</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.nom}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

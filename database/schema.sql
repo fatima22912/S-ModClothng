@@ -49,13 +49,15 @@ CREATE TABLE produits (
     nom                 VARCHAR(200) NOT NULL,
     description         TEXT NULL,
     prix                DECIMAL(10,2) NOT NULL,
+    prix_promo          DECIMAL(10,2) NULL,
     id_categorie        INTEGER NULL,
     id_proprietaire     INTEGER NOT NULL,
     image_principale    VARCHAR(255) NULL,
     actif               SMALLINT NOT NULL DEFAULT 1,
     date_creation       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_produits_categorie FOREIGN KEY (id_categorie) REFERENCES categories(id) ON DELETE SET NULL,
-    CONSTRAINT fk_produits_proprietaire FOREIGN KEY (id_proprietaire) REFERENCES proprietaires(id) ON DELETE CASCADE
+    CONSTRAINT fk_produits_proprietaire FOREIGN KEY (id_proprietaire) REFERENCES proprietaires(id) ON DELETE CASCADE,
+    CONSTRAINT chk_produits_prix_promo CHECK (prix_promo IS NULL OR prix_promo < prix)
 );
 CREATE INDEX idx_produits_categorie ON produits (id_categorie);
 CREATE INDEX idx_produits_proprietaire ON produits (id_proprietaire);

@@ -50,7 +50,7 @@ class Commande
                     }
                 }
 
-                $prixUnitaire = (float) $produit['prix'];
+                $prixUnitaire = self::prixEffectif($produit);
                 $montantTotal += $prixUnitaire * $item['quantite'];
 
                 $lignesPreparees[] = [
@@ -106,6 +106,17 @@ class Commande
             $pdo->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * Prix reellement facture : le prix promo s'il est defini et inferieur au prix normal.
+     */
+    private static function prixEffectif(array $produit): float
+    {
+        $prix = (float) $produit['prix'];
+        $prixPromo = $produit['prix_promo'] ?? null;
+
+        return $prixPromo !== null && (float) $prixPromo < $prix ? (float) $prixPromo : $prix;
     }
 
     public static function trouverParIdAvecLignes(int $id): ?array

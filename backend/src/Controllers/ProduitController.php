@@ -38,16 +38,21 @@ class ProduitController
     public static function creerAdmin(array $donnees, int $idProprietaireParDefaut): void
     {
         $validator = new Validator($donnees);
-        $validator->requis('nom')->requis('prix')->numerique('prix')->requis('id_proprietaire');
+        $validator->requis('nom')->requis('prix')->numerique('prix')->numerique('prix_promo')->requis('id_proprietaire');
 
         if (!$validator->estValide()) {
             Response::erreur($validator->premiereErreur(), 400);
+        }
+
+        if (!empty($donnees['prix_promo']) && (float) $donnees['prix_promo'] >= (float) $donnees['prix']) {
+            Response::erreur('Le prix promo doit être inférieur au prix normal.', 400);
         }
 
         $idProduit = Produit::creer([
             'nom' => $donnees['nom'],
             'description' => $donnees['description'] ?? null,
             'prix' => $donnees['prix'],
+            'prix_promo' => $donnees['prix_promo'] ?? null,
             'id_categorie' => $donnees['id_categorie'] ?? null,
             'id_proprietaire' => $donnees['id_proprietaire'] ?? $idProprietaireParDefaut,
             'image_principale' => $donnees['image_principale'] ?? null,
@@ -69,9 +74,13 @@ class ProduitController
         }
 
         $validator = new Validator($donnees);
-        $validator->requis('nom')->requis('prix')->numerique('prix');
+        $validator->requis('nom')->requis('prix')->numerique('prix')->numerique('prix_promo');
         if (!$validator->estValide()) {
             Response::erreur($validator->premiereErreur(), 400);
+        }
+
+        if (!empty($donnees['prix_promo']) && (float) $donnees['prix_promo'] >= (float) $donnees['prix']) {
+            Response::erreur('Le prix promo doit être inférieur au prix normal.', 400);
         }
 
         Produit::modifier($id, $donnees);

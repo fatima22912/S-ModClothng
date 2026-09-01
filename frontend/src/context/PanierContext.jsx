@@ -30,13 +30,15 @@ export function PanierProvider({ children }) {
         );
       }
 
+      const enPromo = produit.prix_promo && Number(produit.prix_promo) < Number(produit.prix);
+
       return [
         ...precedent,
         {
           cle: cleArticle,
           id_produit: produit.id,
           nom: produit.nom,
-          prix: Number(produit.prix),
+          prix: Number(enPromo ? produit.prix_promo : produit.prix),
           image_principale: produit.image_principale,
           id_variante: variante?.id ?? null,
           taille: variante?.taille ?? null,

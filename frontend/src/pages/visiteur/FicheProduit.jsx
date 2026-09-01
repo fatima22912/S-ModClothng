@@ -47,6 +47,9 @@ export default function FicheProduit() {
     ? variantesTaille.find((v) => v.couleur === couleurChoisie) ?? null
     : variantesTaille[0] ?? null;
 
+  const enPromo = produit.prix_promo && Number(produit.prix_promo) < Number(produit.prix);
+  const reduction = enPromo ? Math.round((1 - produit.prix_promo / produit.prix) * 100) : 0;
+
   const enRupture = aDesVariantes && varianteChoisie && varianteChoisie.quantite_stock < 1;
   const stockInsuffisant = aDesVariantes && varianteChoisie && quantite > varianteChoisie.quantite_stock;
   const produitEnStock = !aDesVariantes || produit.variantes.some((v) => v.quantite_stock > 0);
@@ -111,7 +114,17 @@ export default function FicheProduit() {
         <div>
           {produit.categorie_nom && <p className="text-sm uppercase tracking-wide text-rose">{produit.categorie_nom}</p>}
           <h1 className="mt-1 font-display text-2xl font-bold text-gray-900 sm:text-3xl">{produit.nom}</h1>
-          <p className="mt-3 text-2xl font-semibold text-rose-dark">{formaterPrix(produit.prix)}</p>
+          {enPromo ? (
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <span className="text-lg text-gray-400 line-through">{formaterPrix(produit.prix)}</span>
+              <span className="text-2xl font-semibold text-rose-dark">{formaterPrix(produit.prix_promo)}</span>
+              <span className="rounded-full bg-rose px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
+                -{reduction}%
+              </span>
+            </div>
+          ) : (
+            <p className="mt-3 text-2xl font-semibold text-rose-dark">{formaterPrix(produit.prix)}</p>
+          )}
 
           {produit.description && <p className="mt-4 text-gray-600">{produit.description}</p>}
 

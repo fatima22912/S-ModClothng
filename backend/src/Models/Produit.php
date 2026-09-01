@@ -103,13 +103,14 @@ class Produit
     {
         $pdo = smod_db();
         $stmt = $pdo->prepare(
-            "INSERT INTO produits (nom, description, prix, id_categorie, id_proprietaire, image_principale, actif)
-             VALUES (:nom, :description, :prix, :id_categorie, :id_proprietaire, :image_principale, :actif)"
+            "INSERT INTO produits (nom, description, prix, prix_promo, id_categorie, id_proprietaire, image_principale, actif)
+             VALUES (:nom, :description, :prix, :prix_promo, :id_categorie, :id_proprietaire, :image_principale, :actif)"
         );
         $stmt->execute([
             'nom' => $donnees['nom'],
             'description' => $donnees['description'] ?? null,
             'prix' => $donnees['prix'],
+            'prix_promo' => $donnees['prix_promo'] ?? null,
             'id_categorie' => $donnees['id_categorie'] ?? null,
             'id_proprietaire' => $donnees['id_proprietaire'],
             'image_principale' => $donnees['image_principale'] ?? null,
@@ -127,6 +128,7 @@ class Produit
                 nom = :nom,
                 description = :description,
                 prix = :prix,
+                prix_promo = :prix_promo,
                 id_categorie = :id_categorie,
                 image_principale = COALESCE(:image_principale, image_principale),
                 actif = :actif
@@ -136,6 +138,7 @@ class Produit
             'nom' => $donnees['nom'],
             'description' => $donnees['description'] ?? null,
             'prix' => $donnees['prix'],
+            'prix_promo' => $donnees['prix_promo'] ?? null,
             'id_categorie' => $donnees['id_categorie'] ?? null,
             'image_principale' => $donnees['image_principale'] ?? null,
             'actif' => $donnees['actif'] ?? 1,
