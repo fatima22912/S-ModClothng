@@ -5,6 +5,7 @@ namespace Smod\Controllers;
 use Smod\Helpers\Response;
 use Smod\Helpers\Validator;
 use Smod\Models\Produit;
+use Smod\Services\CloudinaryService;
 
 class ProduitController
 {
@@ -156,11 +157,10 @@ class ProduitController
             Response::erreur('L\'image ne doit pas dépasser 5 Mo.', 400);
         }
 
-        $nomFichier = 'produits/' . bin2hex(random_bytes(8)) . '.' . $extension;
-        $cheminAbsolu = __DIR__ . '/../../public/uploads/' . $nomFichier;
-
-        if (!move_uploaded_file($fichier['tmp_name'], $cheminAbsolu)) {
-            Response::erreur('Échec de l\'enregistrement de l\'image.', 500);
+        try {
+            $urlImage = CloudinaryService::uploaderImage($fichier['tmp_name'], $extension);
+        } catch (\Throwable $e) {
+            Response::erreur('Échec de l\'enregistrement de l\'image : ' . $e->getMessage(), 500);
         }
 
         Produit::modifier($id, [
@@ -168,10 +168,10 @@ class ProduitController
             'description' => $produit['description'],
             'prix' => $produit['prix'],
             'id_categorie' => $produit['id_categorie'],
-            'image_principale' => $nomFichier,
+            'image_principale' => $urlImage,
             'actif' => $produit['actif'],
         ]);
 
-        Response::json(['image_principale' => $nomFichier]);
+        Response::json(['image_principale' => $urlImage]);
     }
 }
