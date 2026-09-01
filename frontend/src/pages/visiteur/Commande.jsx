@@ -61,6 +61,10 @@ export default function Commande() {
           ? await api.infosPaiementWave(commande.id)
           : await api.infosPaiementOrangeMoney(commande.id);
 
+      if (champs.mode_paiement === 'wave' && infosPaiement.lien_paiement) {
+        window.open(infosPaiement.lien_paiement, '_blank', 'noopener,noreferrer');
+      }
+
       viderPanier();
       navigate('/commande/confirmation', { state: { commande, infosPaiement } });
     } catch (err) {
