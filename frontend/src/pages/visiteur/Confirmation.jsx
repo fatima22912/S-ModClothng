@@ -16,7 +16,7 @@ export default function Confirmation() {
   const messageWhatsapp = encodeURIComponent(
     `Bonjour, je viens de passer une commande sur ${BOUTIQUE.nom} (${formaterPrix(
       commande.montant_total
-    )}) et je vous transmets ma preuve de paiement ${estWave ? 'Wave' : 'Orange Money'}.`
+    )}) et je vous transmets la capture d'écran de mon paiement ${estWave ? 'Wave' : 'Orange Money'}.`
   );
 
   return (
@@ -32,7 +32,9 @@ export default function Confirmation() {
 
         <div className="rounded-xl bg-rose-light p-5">
           <div className="mb-2 flex items-center gap-2">
-            <h2 className="font-semibold text-rose-dark">Dernière étape : réglez votre commande par</h2>
+            <h2 className="font-semibold text-rose-dark">
+              {estWave ? 'Paiement Wave' : 'Dernière étape : réglez votre commande par'}
+            </h2>
             {estWave ? (
               <img src={logoWave} alt="Wave" className="h-6 w-6 rounded object-contain" />
             ) : (
@@ -41,16 +43,7 @@ export default function Confirmation() {
           </div>
           <p className="mb-4 text-sm text-gray-700">{infosPaiement.instructions}</p>
 
-          {estWave ? (
-            <a
-              href={infosPaiement.lien_paiement}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-rose w-full sm:w-auto"
-            >
-              Payer {formaterPrix(commande.montant_total)} avec Wave
-            </a>
-          ) : (
+          {!estWave && (
             <div className="flex flex-col items-center gap-3">
               <img
                 src={infosPaiement.qr_code_image}
@@ -65,9 +58,9 @@ export default function Confirmation() {
         </div>
 
         <p className="mt-5 text-sm text-gray-600">
-          Une fois le paiement effectué, envoyez-nous votre preuve de paiement sur WhatsApp pour une confirmation
-          rapide de votre commande. Sinon, {BOUTIQUE.proprietaire} vérifie et confirme les paiements manuellement
-          dans les meilleurs délais.
+          Une fois le paiement effectué, envoyez-nous une <strong>capture d'écran</strong> de la confirmation sur
+          WhatsApp pour une validation rapide de votre commande. Sinon, {BOUTIQUE.proprietaire} vérifie et confirme
+          les paiements manuellement dans les meilleurs délais.
         </p>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -77,7 +70,7 @@ export default function Confirmation() {
             rel="noopener noreferrer"
             className="btn-rose flex-1"
           >
-            Envoyer ma preuve sur WhatsApp
+            Envoyer ma capture d'écran sur WhatsApp
           </a>
           <Link to="/catalogue" className="btn-rose-outline flex-1 text-center">
             Continuer mes achats

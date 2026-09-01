@@ -14,7 +14,7 @@ class OrangeMoneyService
         return [
             'qr_code_image' => env('ORANGE_MONEY_QR_IMAGE', '/assets/paiement/orange-money-qr.png'),
             'montant' => $montant,
-            'instructions' => "Scannez le QR code Orange Money avec votre application, payez {$montant} FCFA, puis indiquez la référence de la transaction dans le formulaire de commande.",
+            'instructions' => "Scannez le QR code Orange Money avec votre application, payez {$montant} FCFA, puis envoyez-nous une capture d'écran de la confirmation sur WhatsApp.",
         ];
     }
 }

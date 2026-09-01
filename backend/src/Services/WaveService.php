@@ -14,10 +14,13 @@ class WaveService
 {
     public static function infosPaiement(float $montant, int $idCommande): array
     {
+        $lienBase = env('WAVE_PAYMENT_LINK', 'https://pay.wave.com/m/M_sn_nSnCGLfVeL3K/c/sn/');
+        $lienAvecMontant = rtrim($lienBase, '/') . '/?amount=' . (int) round($montant);
+
         return [
-            'lien_paiement' => env('WAVE_PAYMENT_LINK', 'https://pay.wave.com/m/M_sn_nSnCGLfVeL3K/c/sn/'),
+            'lien_paiement' => $lienAvecMontant,
             'montant' => $montant,
-            'instructions' => "Payez le montant exact de {$montant} FCFA via le lien Wave, puis indiquez la référence de la transaction (visible dans votre application Wave) dans le formulaire de commande.",
+            'instructions' => "Le montant de {$montant} FCFA est déjà renseigné dans Wave : il ne vous reste qu'à valider le paiement, puis à nous envoyer une capture d'écran de la confirmation sur WhatsApp.",
         ];
     }
 }
